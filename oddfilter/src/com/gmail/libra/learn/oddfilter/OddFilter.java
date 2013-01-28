@@ -2,6 +2,8 @@ package com.gmail.libra.learn.oddfilter;
 
 import java.util.ArrayList;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -13,6 +15,13 @@ import javax.ws.rs.Produces;
  */
 @Path("/oddfilter")
 public class OddFilter {
+    private Logger logger;
+
+    public OddFilter() throws NamingException {
+        InitialContext context = new InitialContext();
+        logger = (Logger)context.lookup("java:global/oddfilter/LoggerBean");
+    }
+
     /**
      * @return ï\é¶Ç≥ÇÍÇÈä»íPÇ»ê‡ñæï∂
      */
@@ -33,6 +42,8 @@ public class OddFilter {
     @Consumes("application/xml")
     @Produces("application/xml")
     public Numbers filter(Numbers numbers) {
+        logger.log(numbers.toString());
+
         ArrayList<Integer> oddNumbers = new ArrayList<Integer>();
 
         for (int n : numbers.getNumbers()) {
@@ -44,5 +55,19 @@ public class OddFilter {
         numbers.setNumbers(oddNumbers);
 
         return numbers;
+    }
+
+    @GET
+    @Path("/log")
+    @Produces("text/plain")
+    public String getLog() {
+        StringBuilder builder = new StringBuilder();
+
+        for (Log l : logger.list()) {
+            builder.append(l.toString());
+            builder.append("\n");
+        }
+
+        return builder.toString();
     }
 }
