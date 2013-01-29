@@ -5,6 +5,6 @@ import javax.ejb.Remote;
 
 @Remote
 public interface Logger {
-    public void log(String numbersString);
+    public void log(User user, String numbersString);
     public List<Log> list();
 }

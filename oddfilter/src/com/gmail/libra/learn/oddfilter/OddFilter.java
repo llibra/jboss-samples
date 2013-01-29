@@ -8,6 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 /**
@@ -16,10 +17,12 @@ import javax.ws.rs.Produces;
 @Path("/oddfilter")
 public class OddFilter {
     private Logger logger;
+    private UserInformation userInfo;
 
     public OddFilter() throws NamingException {
         InitialContext context = new InitialContext();
         logger = (Logger)context.lookup("java:global/oddfilter/LoggerBean");
+        userInfo = (UserInformation)context.lookup("java:global/oddfilter/UserInformationBean");
     }
 
     /**
@@ -31,6 +34,20 @@ public class OddFilter {
         return "This application picks up odd numbers.";
     }
 
+    @GET
+    @Path("/users")
+    @Produces("text/plain")
+    public String getUserList() {
+        StringBuilder builder = new StringBuilder();
+
+        for (User u : userInfo.list()) {
+            builder.append(u.toString());
+            builder.append("\n");
+        }
+
+        return builder.toString();
+    }
+
     /**
      * 任意の数を表したXMLを受け取り、奇数を取り出してXMLで返す
      * 
@@ -38,11 +55,11 @@ public class OddFilter {
      * @return Numbersオブジェクト
      */
     @POST
-    @Path("/filter")
+    @Path("/filter/{user}")
     @Consumes("application/xml")
     @Produces("application/xml")
-    public Numbers filter(Numbers numbers) {
-        logger.log(numbers.toString());
+    public Numbers filter(@PathParam("user") String id, Numbers numbers) {
+        logger.log(userInfo.find(id), numbers.toString());
 
         ArrayList<Integer> oddNumbers = new ArrayList<Integer>();
 

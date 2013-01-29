@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 @SuppressWarnings("serial")
@@ -14,12 +15,15 @@ public class Log implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @ManyToOne
+    private User user;
     private Date date;
     private String input;
 
     public Log() {}
 
-    public Log(String input) {
+    public Log(User user, String input) {
+        this.user = user;
         date = new Date();
         this.input = input;
     }
@@ -30,6 +34,14 @@ public class Log implements Serializable {
 
     public void setId (int id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Date getDate() {
@@ -50,6 +62,6 @@ public class Log implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%d: %s: %s", id, date, input);
+        return String.format("%d: %s: %s: %s", id, user.getId(), date, input);
     }
 }
